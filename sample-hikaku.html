@@ -1,0 +1,599 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>月いくら払えるか、で決めない。</title>
+
+<!-- 資料キット（shiryo-kit）の見本。器: shiryo/template.html -->
+<meta name="description" content="有料プランに上げるかを判断するための材料。資料キット（shiryo-kit）の見本ページです。">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+
+<style>
+/* ==========================================================================
+   1. TOKENS — 色・余白・字送りの定義。ここは編集しない
+   ========================================================================== */
+:root{
+  --canvas:#010102;
+  --s1:#0f1011;
+  --s2:#141516;
+  --s3:#18191a;
+  --s4:#191a1b;
+
+  --hair:#23252a;
+  --hair-strong:#34343a;
+  --hair-3:#3e3e44;
+
+  --ink:#f7f8f8;
+  --ink-muted:#d0d6e0;
+  --ink-subtle:#8a8f98;
+  --ink-3:#62666d;
+
+  --accent:#5e6ad2;
+  --accent-hover:#828fff;
+  --accent-focus:#5e69d1;
+  --success:#27a644;
+
+  --r-xs:4px; --r-sm:6px; --r-md:8px; --r-lg:12px; --r-xl:16px; --r-xxl:24px;
+  --r-pill:9999px;
+
+  --sp-xxs:4px; --sp-xs:8px; --sp-sm:12px; --sp-md:16px;
+  --sp-lg:24px; --sp-xl:32px; --sp-xxl:48px; --sp-sec:96px;
+
+  --font:'Inter','Noto Sans JP',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --font-mono:'JetBrains Mono',ui-monospace,'SF Mono',Menlo,monospace;
+
+  --tr-xl:-0.030em; --tr-lg:-0.028em; --tr-md:-0.022em;
+  --tr-head:-0.020em; --tr-card:-0.018em; --tr-sub:-0.010em;
+  --tr-body:-0.003em; --tr-eyebrow:0.03em;
+
+  --maxw:1280px;
+
+  --panel-hi:rgba(255,255,255,.04);
+  --on-accent:#fff;
+  --inverse-bg:#fff; --inverse-fg:#000; --inverse-bg-hover:#f5f6f6;
+}
+
+/* ==========================================================================
+   1b. LIGHT
+   ========================================================================== */
+:root[data-theme="light"]{
+  --canvas:#ffffff; --s1:#f8f9fa; --s2:#f1f2f4; --s3:#ebecef; --s4:#e8e9ec;
+  --hair:#e4e6e9; --hair-strong:#d0d3d8; --hair-3:#b6bac1;
+  --ink:#101113; --ink-muted:#3f434a; --ink-subtle:#6b7078; --ink-3:#9096a0;
+  --accent:#5e6ad2; --accent-hover:#4b57c4; --accent-focus:#5e69d1; --success:#1a8a37;
+  --panel-hi:rgba(255,255,255,0);
+  --on-accent:#fff;
+  --inverse-bg:#101113; --inverse-fg:#ffffff; --inverse-bg-hover:#2a2d33;
+}
+
+/* ==========================================================================
+   2. RESET & BASE
+   ========================================================================== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  background:var(--canvas);
+  color:var(--ink);
+  font-family:var(--font);
+  font-size:16px; line-height:1.5; letter-spacing:var(--tr-body);
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+img,svg{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+button,input,select,textarea{font:inherit;color:inherit}
+
+:focus-visible{
+  outline:2px solid color-mix(in srgb,var(--accent-focus) 50%,transparent);
+  outline-offset:2px;
+  border-radius:var(--r-xs);
+}
+
+/* ==========================================================================
+   3. TYPOGRAPHY
+   ========================================================================== */
+.display-xl{font-size:clamp(2.25rem,5.5vw + .6rem,5rem);   font-weight:600;line-height:1.05;letter-spacing:var(--tr-xl)}
+.display-lg{font-size:clamp(1.875rem,3.6vw + .6rem,3.5rem);font-weight:600;line-height:1.10;letter-spacing:var(--tr-lg)}
+.display-md{font-size:clamp(1.5rem,2.2vw + .7rem,2.5rem);  font-weight:600;line-height:1.15;letter-spacing:var(--tr-md)}
+.headline  {font-size:clamp(1.375rem,1.4vw + .9rem,1.75rem);font-weight:600;line-height:1.20;letter-spacing:var(--tr-head)}
+.card-title{font-size:1.375rem;font-weight:500;line-height:1.25;letter-spacing:var(--tr-card)}
+.subhead   {font-size:1.25rem; font-weight:400;line-height:1.40;letter-spacing:var(--tr-sub);color:var(--ink-muted)}
+.body-lg   {font-size:1.125rem;font-weight:400;line-height:1.50}
+.body      {font-size:1rem;    font-weight:400;line-height:1.50}
+.body-sm   {font-size:.875rem; font-weight:400;line-height:1.50}
+.caption   {font-size:.75rem;  font-weight:400;line-height:1.40;color:var(--ink-subtle)}
+.mono      {font-family:var(--font-mono);font-size:.8125rem;line-height:1.5}
+
+.eyebrow{
+  font-size:.8125rem;font-weight:500;line-height:1.3;
+  letter-spacing:var(--tr-eyebrow);
+  color:var(--accent);
+  text-transform:uppercase;
+}
+.muted{color:var(--ink-subtle)}
+.dim{color:var(--ink-3)}
+
+/* ==========================================================================
+   4. LAYOUT
+   ========================================================================== */
+.container{max-width:var(--maxw);margin-inline:auto;padding-inline:var(--sp-lg)}
+.section{padding-block:var(--sp-sec);scroll-margin-top:72px}
+.stack-xs > * + *{margin-top:var(--sp-xs)}
+.stack-sm > * + *{margin-top:var(--sp-sm)}
+.stack   > * + *{margin-top:var(--sp-md)}
+.stack-lg> * + *{margin-top:var(--sp-lg)}
+.stack-xl> * + *{margin-top:var(--sp-xl)}
+.row{display:flex;align-items:center;gap:var(--sp-sm);flex-wrap:wrap}
+.row-between{display:flex;align-items:center;justify-content:space-between;gap:var(--sp-md);flex-wrap:wrap}
+
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--sp-md)}
+.grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--sp-md)}
+
+/* ==========================================================================
+   5. COMPONENTS
+   ========================================================================== */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:var(--sp-xs);
+  min-height:40px;padding:var(--sp-xs) 14px;
+  font-size:.875rem;font-weight:500;line-height:1.2;letter-spacing:0;
+  border:1px solid transparent;border-radius:var(--r-md);
+  cursor:pointer;transition:background-color .15s ease,border-color .15s ease,color .15s ease;
+  white-space:nowrap;
+}
+.btn-primary  {background:var(--accent);color:var(--on-accent)}
+.btn-primary:hover {background:var(--accent-hover)}
+.btn-primary:active{background:var(--accent-focus)}
+.btn-secondary{background:var(--s1);color:var(--ink);border-color:var(--hair)}
+.btn-secondary:hover{background:var(--s2);border-color:var(--hair-strong)}
+.btn-tertiary {background:transparent;color:var(--ink-muted)}
+.btn-tertiary:hover{background:var(--s1);color:var(--ink)}
+.btn-inverse  {background:var(--inverse-bg);color:var(--inverse-fg)}
+.btn-inverse:hover{background:var(--inverse-bg-hover)}
+.btn[disabled]{opacity:.45;pointer-events:none}
+.btn-sm{min-height:32px;padding:6px 10px;font-size:.8125rem}
+
+.panel{
+  background:var(--s1);
+  border:1px solid var(--hair);
+  border-radius:var(--r-lg);
+  padding:var(--sp-lg);
+  box-shadow:inset 0 1px 0 var(--panel-hi);
+}
+.panel-lift{background:var(--s2);border-color:var(--hair-strong)}
+.panel-wide{border-radius:var(--r-xl)}
+.panel-cta {padding:var(--sp-xxl)}
+.panel-quote{padding:var(--sp-xl);font-size:1.125rem;line-height:1.5}
+.panel-hover{transition:background-color .15s ease,border-color .15s ease}
+.panel-hover:hover{background:var(--s2);border-color:var(--hair-strong)}
+
+.badge{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--s2);color:var(--ink-muted);
+  font-size:.75rem;line-height:1.4;
+  padding:2px 8px;border-radius:var(--r-pill);border:1px solid var(--hair);
+}
+.badge-success{color:var(--ink)}
+.badge-success::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--success)}
+
+.tabs{display:inline-flex;gap:var(--sp-xxs);background:var(--canvas);
+      border:1px solid var(--hair);border-radius:var(--r-pill);padding:var(--sp-xxs)}
+.tab{
+  min-height:36px;padding:6px 14px;border:0;border-radius:var(--r-pill);
+  background:transparent;color:var(--ink-subtle);
+  font-size:.875rem;font-weight:500;cursor:pointer;transition:.15s ease;
+}
+.tab[aria-selected="true"]{background:var(--s2);color:var(--ink)}
+
+.theme-switch{display:inline-flex;gap:2px;background:var(--canvas);
+  border:1px solid var(--hair);border-radius:var(--r-pill);padding:2px}
+.theme-opt{width:30px;height:30px;border:0;border-radius:var(--r-pill);
+  background:transparent;color:var(--ink-3);cursor:pointer;
+  display:grid;place-items:center;transition:background-color .15s ease,color .15s ease}
+.theme-opt:hover{color:var(--ink-muted)}
+:root[data-theme-pref="system"] .theme-opt[data-theme-set="system"],
+:root[data-theme-pref="light"]  .theme-opt[data-theme-set="light"],
+:root[data-theme-pref="dark"]   .theme-opt[data-theme-set="dark"]{background:var(--s2);color:var(--ink)}
+
+.table-wrap{border:1px solid var(--hair);border-radius:var(--r-lg);overflow:hidden}
+.table{width:100%;border-collapse:collapse;font-size:.875rem}
+.table th{
+  background:var(--s1);color:var(--ink-subtle);
+  font-weight:500;text-align:left;
+  padding:var(--sp-sm) var(--sp-md);
+  border-bottom:1px solid var(--hair);white-space:nowrap;
+}
+.table td{padding:var(--sp-sm) var(--sp-md);border-bottom:1px solid var(--hair)}
+.table tbody tr:last-child td{border-bottom:0}
+.table tbody tr:hover{background:var(--s1)}
+.table .num{text-align:right;font-variant-numeric:tabular-nums}
+
+.row-item{padding:var(--sp-lg) 0;border-bottom:1px solid var(--hair)}
+.row-item:last-child{border-bottom:0}
+
+.nav{
+  position:sticky;top:0;z-index:50;
+  height:56px;background:color-mix(in srgb,var(--canvas) 82%,transparent);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--hair);
+}
+.nav-inner{max-width:var(--maxw);margin-inline:auto;height:100%;
+           padding-inline:var(--sp-lg);display:flex;align-items:center;gap:var(--sp-lg)}
+.brand{display:flex;align-items:center;gap:var(--sp-xs);font-weight:600;letter-spacing:var(--tr-card)}
+.brand-mark{width:20px;height:20px;border-radius:var(--r-sm);background:var(--accent);flex:none}
+.nav-links{display:flex;gap:var(--sp-lg);margin-left:var(--sp-md)}
+.nav-links a{font-size:.875rem;color:var(--ink-subtle);transition:color .15s ease}
+.nav-links a:hover{color:var(--ink)}
+.nav-actions{margin-left:auto;display:flex;gap:var(--sp-xs)}
+.nav-toggle{display:none;background:transparent;border:1px solid var(--hair);
+            border-radius:var(--r-md);width:36px;height:36px;cursor:pointer}
+
+.footer{border-top:1px solid var(--hair);padding:64px var(--sp-xl);color:var(--ink-subtle);font-size:.75rem}
+.footer-grid{max-width:var(--maxw);margin-inline:auto;display:grid;
+             grid-template-columns:1.5fr repeat(3,1fr);gap:var(--sp-xl)}
+.footer a{display:block;padding:5px 0;color:var(--ink-subtle);transition:color .15s ease}
+.footer a:hover{color:var(--ink)}
+.footer h4{font-size:.75rem;font-weight:500;color:var(--ink);margin-bottom:var(--sp-xs)}
+
+.mock{background:var(--canvas);border:1px solid var(--hair);border-radius:var(--r-md);overflow:hidden}
+.mock-bar{display:flex;align-items:center;gap:6px;padding:10px var(--sp-sm);border-bottom:1px solid var(--hair)}
+.mock-dot{width:9px;height:9px;border-radius:50%;background:var(--hair-3)}
+.mock-row{display:flex;align-items:center;gap:var(--sp-sm);
+          padding:10px var(--sp-md);border-bottom:1px solid var(--hair);font-size:.8125rem}
+.mock-row:last-child{border-bottom:0}
+.mock-id{font-family:var(--font-mono);font-size:.75rem;color:var(--ink-3);width:64px;flex:none}
+.mock-tag{margin-left:auto;flex:none}
+
+/* ==========================================================================
+   6. RESPONSIVE
+   ========================================================================== */
+@media (max-width:1024px){
+  .grid-3{grid-template-columns:repeat(2,1fr)}
+  .footer-grid{grid-template-columns:1fr 1fr}
+}
+@media (max-width:768px){
+  :root{--sp-sec:64px}
+  .grid-3,.grid-2{grid-template-columns:1fr}
+  .nav-links{display:none;position:absolute;top:56px;left:0;right:0;
+             flex-direction:column;gap:0;background:var(--s1);
+             border-bottom:1px solid var(--hair);padding:var(--sp-sm) var(--sp-lg);margin:0}
+  .nav-links.open{display:flex}
+  .nav-links a{padding:var(--sp-sm) 0}
+  .nav-toggle{display:block}
+  .theme-opt{width:26px;height:26px}
+  .brand{font-size:.9375rem}
+  .nav-hide-sm{display:none !important}
+  .panel-cta{padding:var(--sp-xl)}
+  .footer-grid{grid-template-columns:1fr}
+}
+
+@media (prefers-reduced-motion:reduce){
+  *{transition-duration:.01ms !important;animation-duration:.01ms !important}
+}
+
+/* ==========================================================================
+   7. PARTS — 資料ページでよく使う部品。トークンだけで組む
+   ========================================================================== */
+
+/* --- 確度バッジ ---------------------------------------------------------
+   「裏が取れた／自己申告／未確認」を見た目で分ける。有彩色は1色ルールなので、
+   差は色ではなく「ドットの形」で出す。
+   確定 = 塗りつぶし .badge-success ／ 自己申告 = 中空 .badge-own ／
+   未確認 = 破線 .badge-check */
+.badge-own::before{content:"";width:6px;height:6px;border-radius:50%;
+  border:1px solid var(--hair-3);background:transparent}
+.badge-check{color:var(--ink-subtle);border-style:dashed;border-color:var(--hair-strong)}
+.badge-check::before{content:"";width:6px;height:6px;border-radius:50%;
+  border:1px dashed var(--ink-3);background:transparent}
+
+/* --- ナビのブランド名 ---------------------------------------------------
+   和文が長いと狭い画面で折り返し、56px のナビからはみ出す。折り返さず、
+   代わりに優先度の低いナビ要素へ .nav-hide-sm を付けて逃がす。 */
+.brand{white-space:nowrap}
+
+/* --- 本文 ---------------------------------------------------------------
+   本文幅は 68ch で止める。全幅に伸ばすと1行が長すぎて読めなくなる */
+.prose{max-width:68ch}
+.prose p + p{margin-top:var(--sp-md)}
+.prose strong{font-weight:600;color:var(--ink)}
+
+/* --- 章番号・小見出しラベル --------------------------------------------- */
+.act-no{font-family:var(--font-mono);font-size:.75rem;color:var(--ink-3);
+  letter-spacing:var(--tr-eyebrow)}
+
+/* --- 縦タイムライン -----------------------------------------------------
+   年を左固定幅・出来事を右に流す。1本の hairline を疑似要素で通す */
+.tl{position:relative;padding-left:var(--sp-lg)}
+.tl::before{content:"";position:absolute;left:0;top:6px;bottom:6px;
+  width:1px;background:var(--hair)}
+.tl-item{position:relative;padding-block:var(--sp-sm)}
+.tl-item::before{content:"";position:absolute;left:calc(var(--sp-lg) * -1);top:calc(var(--sp-sm) + 8px);
+  width:7px;height:7px;border-radius:50%;background:var(--hair-3);
+  transform:translateX(-3px)}
+.tl-item.is-key::before{background:var(--accent)}
+.tl-year{font-family:var(--font-mono);font-size:.8125rem;color:var(--ink-subtle)}
+.tl-item.is-key .tl-year{color:var(--accent)}
+
+/* --- 段組（3つの手順・段階を横に並べる）--------------------------------- */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--sp-sm)}
+.step{background:var(--s2);border:1px solid var(--hair);border-radius:var(--r-md);
+  padding:var(--sp-md)}
+.step-no{font-family:var(--font-mono);font-size:.75rem;color:var(--ink-3)}
+@media (max-width:768px){ .steps{grid-template-columns:1fr} }
+
+/* --- 対比パネル（左右2枚で比べる）--------------------------------------- */
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-md)}
+@media (max-width:768px){ .vs{grid-template-columns:1fr} }
+.ul-tight{list-style:none;padding:0}
+.ul-tight li{position:relative;padding-left:var(--sp-md);margin-top:var(--sp-xs);
+  font-size:.9375rem;line-height:1.55;color:var(--ink-muted)}
+.ul-tight li::before{content:"";position:absolute;left:2px;top:.65em;
+  width:5px;height:1px;background:var(--hair-3)}
+
+/* --- 目次 ---------------------------------------------------------------
+   長い資料でだけ使う。短いページに置くと、かえって読み始めが遅くなる */
+.toc{list-style:none;padding:0;columns:2;column-gap:var(--sp-xl)}
+.toc li{break-inside:avoid}
+.toc a{display:flex;gap:var(--sp-sm);padding:8px 0;border-bottom:1px solid var(--hair);
+  font-size:.9375rem;color:var(--ink-muted);transition:color .15s ease}
+.toc a:hover{color:var(--ink)}
+.toc .n{font-family:var(--font-mono);font-size:.75rem;color:var(--ink-3);flex:none;width:22px}
+@media (max-width:768px){ .toc{columns:1} }
+
+/* --- 出典リスト --------------------------------------------------------- */
+.src{list-style:none;padding:0;columns:2;column-gap:var(--sp-xl)}
+.src li{break-inside:avoid;padding-block:6px;font-size:.8125rem;color:var(--ink-subtle)}
+.src a{color:var(--ink-muted);border-bottom:1px solid var(--hair)}
+.src a:hover{color:var(--accent-hover);border-bottom-color:var(--accent)}
+@media (max-width:768px){ .src{columns:1} }
+
+/* --- 表: 長文セルは折り返す。横長の表は入れ物の中だけでスクロール -------- */
+.table td.wrap{white-space:normal;min-width:220px}
+.table th.yr,.table td.yr{white-space:nowrap;font-family:var(--font-mono);font-size:.8125rem;
+  color:var(--ink-subtle);vertical-align:top}
+.table-scroll{overflow-x:auto}
+</style>
+
+<script>
+/* ==========================================================================
+   テーマ確定 — CSSより後・body描画より前に必ず走らせる
+   ========================================================================== */
+(function () {
+  var THEME_KEY = 'sample-hikaku-theme';
+  function readPref() {
+    try { var v = localStorage.getItem(THEME_KEY);
+      if (v === 'light' || v === 'dark' || v === 'system') return v; } catch (e) {}
+    return 'system';
+  }
+  function resolve(pref) {
+    if (pref === 'light' || pref === 'dark') return pref;
+    return (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) ? 'light' : 'dark';
+  }
+  function apply(pref) {
+    var r = document.documentElement;
+    r.setAttribute('data-theme-pref', pref);
+    r.setAttribute('data-theme', resolve(pref));
+  }
+  apply(readPref());
+
+  document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('click', function (e) {
+      var b = e.target.closest ? e.target.closest('[data-theme-set]') : null;
+      if (!b) return;
+      var pref = b.getAttribute('data-theme-set');
+      try { localStorage.setItem(THEME_KEY, pref); } catch (err) {}
+      apply(pref);
+    });
+  });
+  if (window.matchMedia) {
+    var mq = window.matchMedia('(prefers-color-scheme: light)');
+    var follow = function () { if (readPref() === 'system') apply('system'); };
+    if (mq.addEventListener) mq.addEventListener('change', follow); else mq.addListener(follow);
+  }
+})();
+</script>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="brand" href="#top"><span class="brand-mark"></span>課金の判断材料</a>
+    <div class="nav-links" id="navLinks">
+      <a href="#s1">ぶれる理由</a>
+      <a href="#s2">3つの軸</a>
+      <a href="#s3">どちらか</a>
+      <a href="#s4">前提</a>
+    </div>
+    <div class="nav-actions">
+      <div class="theme-switch" role="group" aria-label="表示テーマ">
+        <button class="theme-opt" data-theme-set="system" title="システムに合わせる" aria-label="システムに合わせる">
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round">
+            <rect x="1.8" y="2.6" width="12.4" height="8.4" rx="1.3"/><path d="M5.5 13.6h5" stroke-linecap="round"/>
+          </svg>
+        </button>
+        <button class="theme-opt" data-theme-set="light" title="ライト" aria-label="ライト">
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
+            <circle cx="8" cy="8" r="3"/><path d="M8 1.2v1.5M8 13.3v1.5M14.8 8h-1.5M2.7 8H1.2M12.8 3.2l-1.1 1.1M4.3 11.7l-1.1 1.1M12.8 12.8l-1.1-1.1M4.3 4.3L3.2 3.2"/>
+          </svg>
+        </button>
+        <button class="theme-opt" data-theme-set="dark" title="ダーク" aria-label="ダーク">
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round">
+            <path d="M13.4 9.5A5.8 5.8 0 0 1 6.5 2.6a5.8 5.8 0 1 0 6.9 6.9Z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+    <button class="nav-toggle" id="navToggle" aria-label="メニュー" aria-expanded="false">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="margin:auto">
+        <path d="M2 4h12M2 8h12M2 12h12"/>
+      </svg>
+    </button>
+  </div>
+</nav>
+
+<header class="section container" id="top">
+  <div class="stack-lg" style="max-width:940px">
+    <p class="eyebrow">検討メモ</p>
+    <h1 class="display-xl">月いくら払えるか、<br>で決めない。</h1>
+    <p class="subhead" style="max-width:680px">有料に上げるかどうかは、金額を見ている限り決まらない。買っているのは機能ではなく、待ち時間と作り直しの回数だから。判断は3つの軸に分けると、その日のうちに決まる。</p>
+  </div>
+</header>
+
+<section class="container">
+  <div class="grid-3">
+    <article class="panel panel-hover stack-sm">
+      <p class="act-no">軸1</p>
+      <h3 class="card-title">頻度</h3>
+      <p class="body-sm muted">週に何回開くか。月に数回なら、上げても差は体感できない。</p>
+    </article>
+    <article class="panel panel-lift stack-sm">
+      <p class="act-no">軸2</p>
+      <h3 class="card-title">詰まり</h3>
+      <p class="body-sm muted">上限に当たって手が止まった回数。ここが多いなら、金額の話をする前に上げていい。</p>
+    </article>
+    <article class="panel panel-hover stack-sm">
+      <p class="act-no">軸3</p>
+      <h3 class="card-title">やり直し</h3>
+      <p class="body-sm muted">同じことを何回言い直したか。回数が減らないなら、原因はプランではなく頼み方にある。</p>
+    </article>
+  </div>
+</section>
+
+<section class="section container" id="s1">
+  <div class="stack-xl">
+    <div class="stack-sm" style="max-width:760px">
+      <p class="act-no">01</p>
+      <h2 class="display-md">判断がぶれるのは、比べているものが違うから</h2>
+    </div>
+    <div class="grid-2">
+      <div class="prose stack">
+        <p>「月◯◯円は高いか」と考え始めた時点で、比較対象が<strong>他の出費</strong>になっている。ランチ何回分、サブスク何本分。この比べ方をすると、答えはその日の気分で変わる。</p>
+        <p>比べるべきなのは出費どうしではなく、<strong>その金額を払わなかった場合に自分が払っているもの</strong>だ。上限に当たって翌日まで待った時間。同じ指示を4回書き直した手間。それを月あたりで数えると、金額は勝手に決まる。</p>
+        <p>逆に、数えてみて「待った覚えがない」「言い直した記憶もない」なら、上げる理由はまだない。上げても体感は変わらず、次の月に解約するだけになる。</p>
+      </div>
+      <aside class="panel panel-lift stack-lg">
+        <div class="stack-xs">
+          <p class="eyebrow">数え方</p>
+          <h3 class="card-title">1週間だけ、正の字を書く</h3>
+        </div>
+        <p class="body-sm muted">記憶で判断すると、たいてい多く見積もる。手元のメモに、その場で線を引くだけでいい。</p>
+        <ul class="ul-tight">
+          <li>上限に当たって手が止まった → 1本</li>
+          <li>同じことを言い直した → 1本</li>
+          <li>待たされて別の作業に移った → 1本</li>
+        </ul>
+        <p class="caption">1週間で10本を超えるなら、迷う段階は過ぎている。</p>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<section class="section container" id="s2">
+  <div class="stack-xl">
+    <div class="stack-sm" style="max-width:760px">
+      <p class="eyebrow">判断の軸</p>
+      <h2 class="display-md">3つの軸で見る</h2>
+      <p class="body-lg muted">どれか1つでも右端に寄っていれば、上げる価値がある。</p>
+    </div>
+    <div class="table-wrap table-scroll">
+      <table class="table">
+        <thead><tr><th>軸</th><th class="wrap">見るもの</th><th class="wrap">まだ早い</th><th class="wrap">上げていい</th></tr></thead>
+        <tbody>
+          <tr><td>頻度</td><td class="wrap">1週間で開いた日数</td><td class="wrap">週1〜2日。思い出したときに使う</td><td class="wrap">ほぼ毎日。開かない日のほうが珍しい</td></tr>
+          <tr><td>詰まり</td><td class="wrap">上限に当たって手が止まった回数</td><td class="wrap">当たった記憶がない</td><td class="wrap">週に何度か当たる。翌日まで待つことがある</td></tr>
+          <tr><td>やり直し</td><td class="wrap">同じ用件を言い直した回数</td><td class="wrap">多いが、頼み方を変えると減る</td><td class="wrap">頼み方を整えても、長い作業で息切れする</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="panel stack-sm">
+      <h3 class="card-title">「やり直し」だけは注意する</h3>
+      <p class="body-sm muted">やり直しが多い原因は、プランではなく頼み方であることのほうが多い。ここだけは、上げる前に1週間だけ頼み方を変えて試したほうがいい。それで減るなら、払う必要はなかったということになる。</p>
+    </div>
+  </div>
+</section>
+
+<section class="section container" id="s3">
+  <div class="stack-xl">
+    <div class="stack-sm" style="max-width:760px">
+      <p class="eyebrow">結論</p>
+      <h2 class="display-md">どちらに当てはまるか</h2>
+    </div>
+    <div class="vs">
+      <div class="panel stack-lg">
+        <div class="row"><span class="badge badge-success">上げていい</span></div>
+        <h3 class="card-title">待ち時間を買う段階にいる</h3>
+        <ul class="ul-tight">
+          <li>ほぼ毎日開いている</li>
+          <li>上限に当たって作業が止まったことがある</li>
+          <li>頼み方を整えても、長い作業が途中で切れる</li>
+          <li>止まっている間、代わりの手段がない</li>
+        </ul>
+      </div>
+      <div class="panel stack-lg">
+        <div class="row"><span class="badge badge-check">まだ早い</span></div>
+        <h3 class="card-title">先に変えるものがある</h3>
+        <ul class="ul-tight">
+          <li>使うのは週に1〜2回</li>
+          <li>上限に当たった記憶がない</li>
+          <li>やり直しの原因が、指示の書き方にある</li>
+          <li>何に使うかが、まだ決まっていない</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section container" id="s4">
+  <div class="stack-xl">
+    <div class="stack-sm" style="max-width:760px">
+      <p class="eyebrow">前提</p>
+      <h2 class="display-md">この整理が置いている前提</h2>
+    </div>
+    <div class="panel stack-sm">
+      <h3 class="card-title">留意事項</h3>
+      <ul class="ul-tight">
+        <li>これは判断の<strong>枠組み</strong>であって、特定のサービスの料金・上限を調べたものではない。実際の金額と条件は、必ず提供元の最新の案内で確かめる</li>
+        <li>上限の当たり方は使い方によって大きく違う。他人の体感をそのまま自分に当てはめない</li>
+        <li>会社で使う場合は、支払い方法と契約者を誰にするかを先に決める。個人カードで始めて後から付け替えるのは手間がかかる</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="container" style="padding-bottom:var(--sp-sec)">
+  <div class="panel panel-cta stack-lg">
+    <p class="eyebrow" style="text-align:center">まとめ</p>
+    <h3 class="headline" style="text-align:center;max-width:900px;margin-inline:auto">1週間だけ正の字を書けば、金額の話は要らなくなる</h3>
+    <p class="body-lg" style="color:var(--ink-muted);max-width:860px;margin-inline:auto">頻度・詰まり・やり直しの3つを1週間数える。10本を超えたら上げる。超えないなら、先に頼み方を変える。この順で見ると、月額をランチ何回分に換算する必要はなくなる。</p>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="footer-grid">
+    <div class="stack-sm">
+      <div class="brand"><span class="brand-mark"></span>課金の判断材料</div>
+      <p class="caption">資料キットの見本 — 検討資料型</p>
+    </div>
+    <div><h4>章</h4><a href="#s1">ぶれる理由</a><a href="#s2">3つの軸</a><a href="#s3">どちらか</a><a href="#s4">前提</a></div>
+    <div><h4>戻る</h4><a href="#top">先頭へ</a></div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var t=document.getElementById('navToggle'),l=document.getElementById('navLinks');
+  if(!t||!l)return;
+  t.addEventListener('click',function(){
+    var open=l.classList.toggle('open');
+    t.setAttribute('aria-expanded',open);
+  });
+  l.addEventListener('click',function(e){
+    if(e.target.tagName==='A'){ l.classList.remove('open'); t.setAttribute('aria-expanded',false); }
+  });
+})();
+</script>
+</body>
+</html>

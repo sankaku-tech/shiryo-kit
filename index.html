@@ -1,0 +1,713 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>資料キット — 調べたことを1枚の資料ページにする</title>
+<meta name="description" content="チャットで終わってしまう調べものを、そのまま人に渡せる1枚の資料ページに変えるキット。コピーして貼るだけ。">
+<meta property="og:title" content="資料キット">
+<meta property="og:description" content="調べたことを、そのまま人に渡せる資料にする。コピーして貼るだけ。">
+<meta property="og:type" content="website">
+
+<!-- このファイルは _build_index.py が生成する。直接編集しないこと -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+
+<style>
+/* ==========================================================================
+   1. TOKENS — 色・余白・字送りの定義。ここは編集しない
+   ========================================================================== */
+:root{
+  --canvas:#010102;
+  --s1:#0f1011;
+  --s2:#141516;
+  --s3:#18191a;
+  --s4:#191a1b;
+
+  --hair:#23252a;
+  --hair-strong:#34343a;
+  --hair-3:#3e3e44;
+
+  --ink:#f7f8f8;
+  --ink-muted:#d0d6e0;
+  --ink-subtle:#8a8f98;
+  --ink-3:#62666d;
+
+  --accent:#5e6ad2;
+  --accent-hover:#828fff;
+  --accent-focus:#5e69d1;
+  --success:#27a644;
+
+  --r-xs:4px; --r-sm:6px; --r-md:8px; --r-lg:12px; --r-xl:16px; --r-xxl:24px;
+  --r-pill:9999px;
+
+  --sp-xxs:4px; --sp-xs:8px; --sp-sm:12px; --sp-md:16px;
+  --sp-lg:24px; --sp-xl:32px; --sp-xxl:48px; --sp-sec:96px;
+
+  --font:'Inter','Noto Sans JP',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --font-mono:'JetBrains Mono',ui-monospace,'SF Mono',Menlo,monospace;
+
+  --tr-xl:-0.030em; --tr-lg:-0.028em; --tr-md:-0.022em;
+  --tr-head:-0.020em; --tr-card:-0.018em; --tr-sub:-0.010em;
+  --tr-body:-0.003em; --tr-eyebrow:0.03em;
+
+  --maxw:1280px;
+
+  --panel-hi:rgba(255,255,255,.04);
+  --on-accent:#fff;
+  --inverse-bg:#fff; --inverse-fg:#000; --inverse-bg-hover:#f5f6f6;
+}
+
+/* ==========================================================================
+   1b. LIGHT
+   ========================================================================== */
+:root[data-theme="light"]{
+  --canvas:#ffffff; --s1:#f8f9fa; --s2:#f1f2f4; --s3:#ebecef; --s4:#e8e9ec;
+  --hair:#e4e6e9; --hair-strong:#d0d3d8; --hair-3:#b6bac1;
+  --ink:#101113; --ink-muted:#3f434a; --ink-subtle:#6b7078; --ink-3:#9096a0;
+  --accent:#5e6ad2; --accent-hover:#4b57c4; --accent-focus:#5e69d1; --success:#1a8a37;
+  --panel-hi:rgba(255,255,255,0);
+  --on-accent:#fff;
+  --inverse-bg:#101113; --inverse-fg:#ffffff; --inverse-bg-hover:#2a2d33;
+}
+
+/* ==========================================================================
+   2. RESET & BASE
+   ========================================================================== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  background:var(--canvas);
+  color:var(--ink);
+  font-family:var(--font);
+  font-size:16px; line-height:1.5; letter-spacing:var(--tr-body);
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+img,svg{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+button,input,select,textarea{font:inherit;color:inherit}
+
+:focus-visible{
+  outline:2px solid color-mix(in srgb,var(--accent-focus) 50%,transparent);
+  outline-offset:2px;
+  border-radius:var(--r-xs);
+}
+
+/* ==========================================================================
+   3. TYPOGRAPHY
+   ========================================================================== */
+.display-xl{font-size:clamp(2.25rem,5.5vw + .6rem,5rem);   font-weight:600;line-height:1.05;letter-spacing:var(--tr-xl)}
+.display-lg{font-size:clamp(1.875rem,3.6vw + .6rem,3.5rem);font-weight:600;line-height:1.10;letter-spacing:var(--tr-lg)}
+.display-md{font-size:clamp(1.5rem,2.2vw + .7rem,2.5rem);  font-weight:600;line-height:1.15;letter-spacing:var(--tr-md)}
+.headline  {font-size:clamp(1.375rem,1.4vw + .9rem,1.75rem);font-weight:600;line-height:1.20;letter-spacing:var(--tr-head)}
+.card-title{font-size:1.375rem;font-weight:500;line-height:1.25;letter-spacing:var(--tr-card)}
+.subhead   {font-size:1.25rem; font-weight:400;line-height:1.40;letter-spacing:var(--tr-sub);color:var(--ink-muted)}
+.body-lg   {font-size:1.125rem;font-weight:400;line-height:1.50}
+.body      {font-size:1rem;    font-weight:400;line-height:1.50}
+.body-sm   {font-size:.875rem; font-weight:400;line-height:1.50}
+.caption   {font-size:.75rem;  font-weight:400;line-height:1.40;color:var(--ink-subtle)}
+.mono      {font-family:var(--font-mono);font-size:.8125rem;line-height:1.5}
+
+.eyebrow{
+  font-size:.8125rem;font-weight:500;line-height:1.3;
+  letter-spacing:var(--tr-eyebrow);
+  color:var(--accent);
+  text-transform:uppercase;
+}
+.muted{color:var(--ink-subtle)}
+.dim{color:var(--ink-3)}
+
+/* ==========================================================================
+   4. LAYOUT
+   ========================================================================== */
+.container{max-width:var(--maxw);margin-inline:auto;padding-inline:var(--sp-lg)}
+.section{padding-block:var(--sp-sec);scroll-margin-top:72px}
+.stack-xs > * + *{margin-top:var(--sp-xs)}
+.stack-sm > * + *{margin-top:var(--sp-sm)}
+.stack   > * + *{margin-top:var(--sp-md)}
+.stack-lg> * + *{margin-top:var(--sp-lg)}
+.stack-xl> * + *{margin-top:var(--sp-xl)}
+.row{display:flex;align-items:center;gap:var(--sp-sm);flex-wrap:wrap}
+.row-between{display:flex;align-items:center;justify-content:space-between;gap:var(--sp-md);flex-wrap:wrap}
+
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--sp-md)}
+.grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--sp-md)}
+
+/* ==========================================================================
+   5. COMPONENTS
+   ========================================================================== */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:var(--sp-xs);
+  min-height:40px;padding:var(--sp-xs) 14px;
+  font-size:.875rem;font-weight:500;line-height:1.2;letter-spacing:0;
+  border:1px solid transparent;border-radius:var(--r-md);
+  cursor:pointer;transition:background-color .15s ease,border-color .15s ease,color .15s ease;
+  white-space:nowrap;
+}
+.btn-primary  {background:var(--accent);color:var(--on-accent)}
+.btn-primary:hover {background:var(--accent-hover)}
+.btn-primary:active{background:var(--accent-focus)}
+.btn-secondary{background:var(--s1);color:var(--ink);border-color:var(--hair)}
+.btn-secondary:hover{background:var(--s2);border-color:var(--hair-strong)}
+.btn-tertiary {background:transparent;color:var(--ink-muted)}
+.btn-tertiary:hover{background:var(--s1);color:var(--ink)}
+.btn-inverse  {background:var(--inverse-bg);color:var(--inverse-fg)}
+.btn-inverse:hover{background:var(--inverse-bg-hover)}
+.btn[disabled]{opacity:.45;pointer-events:none}
+.btn-sm{min-height:32px;padding:6px 10px;font-size:.8125rem}
+
+.panel{
+  background:var(--s1);
+  border:1px solid var(--hair);
+  border-radius:var(--r-lg);
+  padding:var(--sp-lg);
+  box-shadow:inset 0 1px 0 var(--panel-hi);
+}
+.panel-lift{background:var(--s2);border-color:var(--hair-strong)}
+.panel-wide{border-radius:var(--r-xl)}
+.panel-cta {padding:var(--sp-xxl)}
+.panel-quote{padding:var(--sp-xl);font-size:1.125rem;line-height:1.5}
+.panel-hover{transition:background-color .15s ease,border-color .15s ease}
+.panel-hover:hover{background:var(--s2);border-color:var(--hair-strong)}
+
+.badge{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--s2);color:var(--ink-muted);
+  font-size:.75rem;line-height:1.4;
+  padding:2px 8px;border-radius:var(--r-pill);border:1px solid var(--hair);
+}
+.badge-success{color:var(--ink)}
+.badge-success::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--success)}
+
+.tabs{display:inline-flex;gap:var(--sp-xxs);background:var(--canvas);
+      border:1px solid var(--hair);border-radius:var(--r-pill);padding:var(--sp-xxs)}
+.tab{
+  min-height:36px;padding:6px 14px;border:0;border-radius:var(--r-pill);
+  background:transparent;color:var(--ink-subtle);
+  font-size:.875rem;font-weight:500;cursor:pointer;transition:.15s ease;
+}
+.tab[aria-selected="true"]{background:var(--s2);color:var(--ink)}
+
+.theme-switch{display:inline-flex;gap:2px;background:var(--canvas);
+  border:1px solid var(--hair);border-radius:var(--r-pill);padding:2px}
+.theme-opt{width:30px;height:30px;border:0;border-radius:var(--r-pill);
+  background:transparent;color:var(--ink-3);cursor:pointer;
+  display:grid;place-items:center;transition:background-color .15s ease,color .15s ease}
+.theme-opt:hover{color:var(--ink-muted)}
+:root[data-theme-pref="system"] .theme-opt[data-theme-set="system"],
+:root[data-theme-pref="light"]  .theme-opt[data-theme-set="light"],
+:root[data-theme-pref="dark"]   .theme-opt[data-theme-set="dark"]{background:var(--s2);color:var(--ink)}
+
+.table-wrap{border:1px solid var(--hair);border-radius:var(--r-lg);overflow:hidden}
+.table{width:100%;border-collapse:collapse;font-size:.875rem}
+.table th{
+  background:var(--s1);color:var(--ink-subtle);
+  font-weight:500;text-align:left;
+  padding:var(--sp-sm) var(--sp-md);
+  border-bottom:1px solid var(--hair);white-space:nowrap;
+}
+.table td{padding:var(--sp-sm) var(--sp-md);border-bottom:1px solid var(--hair)}
+.table tbody tr:last-child td{border-bottom:0}
+.table tbody tr:hover{background:var(--s1)}
+.table .num{text-align:right;font-variant-numeric:tabular-nums}
+
+.row-item{padding:var(--sp-lg) 0;border-bottom:1px solid var(--hair)}
+.row-item:last-child{border-bottom:0}
+
+.nav{
+  position:sticky;top:0;z-index:50;
+  height:56px;background:color-mix(in srgb,var(--canvas) 82%,transparent);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--hair);
+}
+.nav-inner{max-width:var(--maxw);margin-inline:auto;height:100%;
+           padding-inline:var(--sp-lg);display:flex;align-items:center;gap:var(--sp-lg)}
+.brand{display:flex;align-items:center;gap:var(--sp-xs);font-weight:600;letter-spacing:var(--tr-card)}
+.brand-mark{width:20px;height:20px;border-radius:var(--r-sm);background:var(--accent);flex:none}
+.nav-links{display:flex;gap:var(--sp-lg);margin-left:var(--sp-md)}
+.nav-links a{font-size:.875rem;color:var(--ink-subtle);transition:color .15s ease}
+.nav-links a:hover{color:var(--ink)}
+.nav-actions{margin-left:auto;display:flex;gap:var(--sp-xs)}
+.nav-toggle{display:none;background:transparent;border:1px solid var(--hair);
+            border-radius:var(--r-md);width:36px;height:36px;cursor:pointer}
+
+.footer{border-top:1px solid var(--hair);padding:64px var(--sp-xl);color:var(--ink-subtle);font-size:.75rem}
+.footer-grid{max-width:var(--maxw);margin-inline:auto;display:grid;
+             grid-template-columns:1.5fr repeat(3,1fr);gap:var(--sp-xl)}
+.footer a{display:block;padding:5px 0;color:var(--ink-subtle);transition:color .15s ease}
+.footer a:hover{color:var(--ink)}
+.footer h4{font-size:.75rem;font-weight:500;color:var(--ink);margin-bottom:var(--sp-xs)}
+
+.mock{background:var(--canvas);border:1px solid var(--hair);border-radius:var(--r-md);overflow:hidden}
+.mock-bar{display:flex;align-items:center;gap:6px;padding:10px var(--sp-sm);border-bottom:1px solid var(--hair)}
+.mock-dot{width:9px;height:9px;border-radius:50%;background:var(--hair-3)}
+.mock-row{display:flex;align-items:center;gap:var(--sp-sm);
+          padding:10px var(--sp-md);border-bottom:1px solid var(--hair);font-size:.8125rem}
+.mock-row:last-child{border-bottom:0}
+.mock-id{font-family:var(--font-mono);font-size:.75rem;color:var(--ink-3);width:64px;flex:none}
+.mock-tag{margin-left:auto;flex:none}
+
+/* ==========================================================================
+   6. RESPONSIVE
+   ========================================================================== */
+@media (max-width:1024px){
+  .grid-3{grid-template-columns:repeat(2,1fr)}
+  .footer-grid{grid-template-columns:1fr 1fr}
+}
+@media (max-width:768px){
+  :root{--sp-sec:64px}
+  .grid-3,.grid-2{grid-template-columns:1fr}
+  .nav-links{display:none;position:absolute;top:56px;left:0;right:0;
+             flex-direction:column;gap:0;background:var(--s1);
+             border-bottom:1px solid var(--hair);padding:var(--sp-sm) var(--sp-lg);margin:0}
+  .nav-links.open{display:flex}
+  .nav-links a{padding:var(--sp-sm) 0}
+  .nav-toggle{display:block}
+  .theme-opt{width:26px;height:26px}
+  .brand{font-size:.9375rem}
+  .nav-hide-sm{display:none !important}
+  .panel-cta{padding:var(--sp-xl)}
+  .footer-grid{grid-template-columns:1fr}
+}
+
+@media (prefers-reduced-motion:reduce){
+  *{transition-duration:.01ms !important;animation-duration:.01ms !important}
+}
+
+/* ==========================================================================
+   7. PARTS — 資料ページでよく使う部品。トークンだけで組む
+   ========================================================================== */
+
+/* --- 確度バッジ ---------------------------------------------------------
+   「裏が取れた／自己申告／未確認」を見た目で分ける。有彩色は1色ルールなので、
+   差は色ではなく「ドットの形」で出す。
+   確定 = 塗りつぶし .badge-success ／ 自己申告 = 中空 .badge-own ／
+   未確認 = 破線 .badge-check */
+.badge-own::before{content:"";width:6px;height:6px;border-radius:50%;
+  border:1px solid var(--hair-3);background:transparent}
+.badge-check{color:var(--ink-subtle);border-style:dashed;border-color:var(--hair-strong)}
+.badge-check::before{content:"";width:6px;height:6px;border-radius:50%;
+  border:1px dashed var(--ink-3);background:transparent}
+
+/* --- ナビのブランド名 ---------------------------------------------------
+   和文が長いと狭い画面で折り返し、56px のナビからはみ出す。折り返さず、
+   代わりに優先度の低いナビ要素へ .nav-hide-sm を付けて逃がす。 */
+.brand{white-space:nowrap}
+
+/* --- 本文 ---------------------------------------------------------------
+   本文幅は 68ch で止める。全幅に伸ばすと1行が長すぎて読めなくなる */
+.prose{max-width:68ch}
+.prose p + p{margin-top:var(--sp-md)}
+.prose strong{font-weight:600;color:var(--ink)}
+
+/* --- 章番号・小見出しラベル --------------------------------------------- */
+.act-no{font-family:var(--font-mono);font-size:.75rem;color:var(--ink-3);
+  letter-spacing:var(--tr-eyebrow)}
+
+/* --- 縦タイムライン -----------------------------------------------------
+   年を左固定幅・出来事を右に流す。1本の hairline を疑似要素で通す */
+.tl{position:relative;padding-left:var(--sp-lg)}
+.tl::before{content:"";position:absolute;left:0;top:6px;bottom:6px;
+  width:1px;background:var(--hair)}
+.tl-item{position:relative;padding-block:var(--sp-sm)}
+.tl-item::before{content:"";position:absolute;left:calc(var(--sp-lg) * -1);top:calc(var(--sp-sm) + 8px);
+  width:7px;height:7px;border-radius:50%;background:var(--hair-3);
+  transform:translateX(-3px)}
+.tl-item.is-key::before{background:var(--accent)}
+.tl-year{font-family:var(--font-mono);font-size:.8125rem;color:var(--ink-subtle)}
+.tl-item.is-key .tl-year{color:var(--accent)}
+
+/* --- 段組（3つの手順・段階を横に並べる）--------------------------------- */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--sp-sm)}
+.step{background:var(--s2);border:1px solid var(--hair);border-radius:var(--r-md);
+  padding:var(--sp-md)}
+.step-no{font-family:var(--font-mono);font-size:.75rem;color:var(--ink-3)}
+@media (max-width:768px){ .steps{grid-template-columns:1fr} }
+
+/* --- 対比パネル（左右2枚で比べる）--------------------------------------- */
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-md)}
+@media (max-width:768px){ .vs{grid-template-columns:1fr} }
+.ul-tight{list-style:none;padding:0}
+.ul-tight li{position:relative;padding-left:var(--sp-md);margin-top:var(--sp-xs);
+  font-size:.9375rem;line-height:1.55;color:var(--ink-muted)}
+.ul-tight li::before{content:"";position:absolute;left:2px;top:.65em;
+  width:5px;height:1px;background:var(--hair-3)}
+
+/* --- 目次 ---------------------------------------------------------------
+   長い資料でだけ使う。短いページに置くと、かえって読み始めが遅くなる */
+.toc{list-style:none;padding:0;columns:2;column-gap:var(--sp-xl)}
+.toc li{break-inside:avoid}
+.toc a{display:flex;gap:var(--sp-sm);padding:8px 0;border-bottom:1px solid var(--hair);
+  font-size:.9375rem;color:var(--ink-muted);transition:color .15s ease}
+.toc a:hover{color:var(--ink)}
+.toc .n{font-family:var(--font-mono);font-size:.75rem;color:var(--ink-3);flex:none;width:22px}
+@media (max-width:768px){ .toc{columns:1} }
+
+/* --- 出典リスト --------------------------------------------------------- */
+.src{list-style:none;padding:0;columns:2;column-gap:var(--sp-xl)}
+.src li{break-inside:avoid;padding-block:6px;font-size:.8125rem;color:var(--ink-subtle)}
+.src a{color:var(--ink-muted);border-bottom:1px solid var(--hair)}
+.src a:hover{color:var(--accent-hover);border-bottom-color:var(--accent)}
+@media (max-width:768px){ .src{columns:1} }
+
+/* --- 表: 長文セルは折り返す。横長の表は入れ物の中だけでスクロール -------- */
+.table td.wrap{white-space:normal;min-width:220px}
+.table th.yr,.table td.yr{white-space:nowrap;font-family:var(--font-mono);font-size:.8125rem;
+  color:var(--ink-subtle);vertical-align:top}
+.table-scroll{overflow-x:auto}
+</style>
+
+<script>
+/* ==========================================================================
+   テーマ確定 — CSSより後・body描画より前に必ず走らせる
+   ========================================================================== */
+(function () {
+  var THEME_KEY = 'shiryo-lp-theme';
+  function readPref() {
+    try { var v = localStorage.getItem(THEME_KEY);
+      if (v === 'light' || v === 'dark' || v === 'system') return v; } catch (e) {}
+    return 'system';
+  }
+  function resolve(pref) {
+    if (pref === 'light' || pref === 'dark') return pref;
+    return (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) ? 'light' : 'dark';
+  }
+  function apply(pref) {
+    var r = document.documentElement;
+    r.setAttribute('data-theme-pref', pref);
+    r.setAttribute('data-theme', resolve(pref));
+  }
+  apply(readPref());
+
+  document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('click', function (e) {
+      var b = e.target.closest ? e.target.closest('[data-theme-set]') : null;
+      if (!b) return;
+      var pref = b.getAttribute('data-theme-set');
+      try { localStorage.setItem(THEME_KEY, pref); } catch (err) {}
+      apply(pref);
+    });
+  });
+  if (window.matchMedia) {
+    var mq = window.matchMedia('(prefers-color-scheme: light)');
+    var follow = function () { if (readPref() === 'system') apply('system'); };
+    if (mq.addEventListener) mq.addEventListener('change', follow); else mq.addListener(follow);
+  }
+})();
+</script>
+
+<style>
+/* ==========================================================================
+   配布ページ専用の層。器のトークンだけを使い、色は直接書かない
+   ========================================================================== */
+.lp-hero{padding-block:calc(var(--sp-sec) * .8) var(--sp-xl)}
+.lp-gift{
+  display:inline-flex;align-items:center;gap:var(--sp-xs);
+  font-size:.8125rem;color:var(--accent);
+  border:1px solid var(--hair-strong);border-radius:var(--r-pill);
+  padding:6px 14px;
+}
+
+/* --- コピーの箱。ページの主役なので1段持ち上げる ---------------------- */
+.lp-copy{background:var(--s2);border:1px solid var(--hair-strong);
+  border-radius:var(--r-xl);padding:var(--sp-lg);
+  box-shadow:inset 0 1px 0 var(--panel-hi)}
+.lp-btn-copy{
+  width:100%;min-height:56px;font-size:1rem;font-weight:600;
+  border-radius:var(--r-md);border:1px solid transparent;
+  background:var(--accent);color:var(--on-accent);cursor:pointer;
+  display:inline-flex;align-items:center;justify-content:center;gap:var(--sp-xs);
+  transition:background-color .15s ease;
+}
+.lp-btn-copy:hover{background:var(--accent-hover)}
+/* コピー後は色を変えず、面と文字だけで「済んだ」を伝える。
+   成功色に変えると、有彩色が2つになって設計が崩れる */
+.lp-btn-copy.is-done{background:var(--s4);color:var(--ink);border-color:var(--hair-strong)}
+
+/* --- プロンプト本文。長いので畳んでおく ------------------------------- */
+.lp-pre{
+  margin-top:var(--sp-md);max-height:220px;overflow:auto;
+  background:var(--canvas);border:1px solid var(--hair);border-radius:var(--r-md);
+  padding:var(--sp-md);
+  font-family:var(--font-mono);font-size:.75rem;line-height:1.7;
+  color:var(--ink-muted);white-space:pre-wrap;word-break:break-word;
+}
+.lp-toggle{background:none;border:0;color:var(--ink-subtle);cursor:pointer;
+  font-size:.8125rem;padding:var(--sp-xs) 0}
+.lp-toggle:hover{color:var(--ink)}
+
+.lp-num{font-family:var(--font-mono);font-size:.75rem;color:var(--accent)}
+
+/* --- 見本ギャラリー。panel をまるごとリンクにする --------------------- */
+.lp-card{display:block;text-decoration:none;color:inherit}
+.lp-card:hover{border-color:var(--hair-strong)}
+.lp-card .card-title{margin:0}
+.lp-types{display:flex;flex-wrap:wrap;gap:6px}
+/* 型のラベルは有彩色を使わない。accent はコピーボタンだけの持ち物 */
+.lp-type{
+  font-size:.6875rem;color:var(--ink-subtle);
+  border:1px solid var(--hair);border-radius:var(--r-pill);padding:2px 10px;
+}
+.lp-foot{border-top:1px solid var(--hair);padding-block:var(--sp-xl) var(--sp-sec)}
+@media (max-width:768px){ .lp-hero{padding-block:var(--sp-xl)} }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="brand" href="#"><span class="brand-mark"></span>資料キット</a>
+    <div class="nav-actions">
+      <div class="theme-switch" role="group" aria-label="表示テーマ">
+        <button class="theme-opt" data-theme-set="system" title="システムに合わせる" aria-label="システムに合わせる">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+        </button>
+        <button class="theme-opt" data-theme-set="light" title="ライト" aria-label="ライト">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        </button>
+        <button class="theme-opt" data-theme-set="dark" title="ダーク" aria-label="ダーク">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<header class="container lp-hero">
+  <div class="stack-lg" style="max-width:760px">
+    <span class="lp-gift">受け取ってください</span>
+    <h1 class="display-lg">調べたことを、<br>そのまま渡せる資料に。</h1>
+    <p class="subhead">調べものが一区切りついた直後に、下のボタンでコピーして貼るだけ。<br>インストールも登録も要りません。</p>
+  </div>
+</header>
+
+<main class="container">
+
+  <section class="lp-copy">
+    <button class="lp-btn-copy" id="copyBtn" type="button" data-label="プロンプトをコピーする">
+      プロンプトをコピーする
+    </button>
+    <p class="caption" style="margin-top:var(--sp-sm);text-align:center" id="copyNote">
+      押すと、下の文章がまるごとコピーされます
+    </p>
+    <button class="lp-toggle" id="peekBtn" type="button" aria-expanded="false">中身を見る ▾</button>
+    <pre class="lp-pre" id="promptBox" hidden>これまでの内容を、そのまま人に見せられる1枚の資料HTMLにまとめてください。
+
+【いちばん大事なこと】
+文章をそのままHTMLに貼らないでください。段落をタグに置き換えただけのものは資料ではありません。
+まず「結論は何か」「章はいくつか」を決めてから書いてください。
+そして、下の部品から【3種類まで】選んで組み立ててください。全部使わないこと。
+
+【部品】
+1. 要約カード … 要点が3つに絞れるとき。横3枚。いちばん大事な1枚だけ面を明るくする
+2. 本文＋補足 … 説明が続くとき。本文は幅68文字で止め、補足・注意は右の箱に逃がす
+3. 段組     … 3つの段階・手順があるとき。横3列
+4. 対比     … やる/やらない・前/後があるとき。左右2枚のカード
+5. 表       … 項目×観点で並ぶとき。横長になるなら表の入れ物の中だけでスクロールさせる
+6. 年表     … 時系列があるとき。縦1本の線に沿って並べ、重要な行だけ点を accent 色にする
+7. 出典     … 根拠を示したいとき。実在するURLだけ書く
+
+【構成】
+- 冒頭に結論を1〜2文。ここを読むだけで用が足りるように書く。前置きから始めない
+- 上部に固定ナビを置き、章へのリンクにする（4〜8個まで）
+- 見出しは体言止めにせず、短くていいので文にする
+- 最後に「まとめ」を置く。新しい情報をそこで足さない
+
+【書いてはいけないこと】
+- 元の内容にない数字・手順・出典を作らない。足りないなら、書く前に質問する
+- 確かなことと、伝聞・推測・未確認を混ぜない。分けて書く
+- 絵文字を装飾に使わない
+
+【確度を示すバッジ】
+確かさに差があるときは、小さなバッジを付けてください。色は変えず、先頭の丸の形で分けます。
+- 確定 … 丸を塗りつぶす
+- 自己申告 … 丸を中空（細い実線の輪）にする
+- 未確認 … 丸を破線の輪にする
+
+【見た目の決まり】
+影・グラデーションを使わない。面の色の差と1pxの線だけで階層を作る。
+有彩色は #5e6ad2 の1色だけ。角丸は8px（カードは12px）。ボタンをピル型にしない。
+フォントは system-ui と Noto Sans JP。
+
+ダークとライトの両方に対応させ、右上に「システム / ライト / ダーク」の3択ボタンを付けてください。
+色は必ず下の変数を経由して書いてください（色を直接書かないこと）。
+
+:root{
+  --canvas:#010102; --s1:#0f1011; --s2:#141516;
+  --hair:#23252a; --hair-strong:#34343a; --hair-3:#3e3e44;
+  --ink:#f7f8f8; --ink-muted:#d0d6e0; --ink-subtle:#8a8f98; --ink-3:#62666d;
+  --accent:#5e6ad2; --success:#27a644;
+}
+:root[data-theme=&quot;light&quot;]{
+  --canvas:#ffffff; --s1:#f8f9fa; --s2:#f1f2f4;
+  --hair:#e4e6e9; --hair-strong:#d0d3d8; --hair-3:#b6bac1;
+  --ink:#101113; --ink-muted:#3f434a; --ink-subtle:#6b7078; --ink-3:#9096a0;
+  --accent:#5e6ad2; --success:#1a8a37;
+}
+
+3択ボタンは、押した内容を localStorage に保存し、
+「システム」のときだけ端末の設定に合わせてください。
+テーマを決めるスクリプトは &lt;head&gt; の中（body より前）に置いてください。
+後ろに置くと、開いた瞬間に色がちらつきます。
+
+HTMLファイルは1枚。CSSは &lt;style&gt; に内包し、外部ファイル・画像は使わないでください。
+幅375pxのスマホでも、ページごと横スクロールしないようにしてください。</pre>
+  </section>
+
+  <section class="section">
+    <div class="stack-xl">
+      <h2 class="display-md">使い方</h2>
+      <div class="grid-3">
+        <article class="panel stack-sm">
+          <p class="lp-num">01</p>
+          <h3 class="card-title">調べものが一区切りついたら</h3>
+          <p class="body-sm muted">ChatGPT・Claude・Gemini、どれでも大丈夫です。話が長くなって、結論がどこにあるか分からなくなった、その直後に。</p>
+        </article>
+        <article class="panel stack-sm">
+          <p class="lp-num">02</p>
+          <h3 class="card-title">コピーして、そのまま送る</h3>
+          <p class="body-sm muted">上のボタンでコピーして、同じチャットに貼って送信するだけ。1回貼れば、その会話ではずっと効きます。</p>
+        </article>
+        <article class="panel stack-sm">
+          <p class="lp-num">03</p>
+          <h3 class="card-title">章立てのある資料が返ってくる</h3>
+          <p class="body-sm muted">結論が冒頭に立ち、内容に合わせて表・年表・対比のうち合うものだけが選ばれて出てきます。</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="stack-xl">
+      <div class="stack-sm" style="max-width:760px">
+        <h2 class="display-md">どんなものが出てくるか</h2>
+        <p class="body muted">すべて、このキットで実際に出力したページです。開いてそのまま読めます（右上でダーク／ライトも切り替わります）。</p>
+      </div>
+      <div class="grid-2">
+
+        <a class="panel panel-hover lp-card stack-sm" href="sample-manual.html">
+          <div class="lp-types"><span class="lp-type">要約カード</span><span class="lp-type">段組</span><span class="lp-type">表</span><span class="lp-type">対比</span></div>
+          <h3 class="card-title">ツールを配る前に、決めごとを3つ書く。</h3>
+          <p class="body-sm muted">社内で使い始めるときの手引き。章立て・段組・表・対比を一通り使った、いちばん資料らしい1枚です。</p>
+        </a>
+
+        <a class="panel panel-hover lp-card stack-sm" href="sample-hikaku.html">
+          <div class="lp-types"><span class="lp-type">要約カード</span><span class="lp-type">表</span><span class="lp-type">対比</span></div>
+          <h3 class="card-title">月いくら払えるか、で決めない。</h3>
+          <p class="body-sm muted">有料に上げるかどうかを決めるための検討メモ。左右の対比と表で、どちらに当てはまるかを見せています。</p>
+        </a>
+
+      </div>
+
+      <div class="grid-2">
+
+        <a class="panel panel-hover lp-card stack-sm" href="sample-keikaku.html">
+          <div class="lp-types"><span class="lp-type">年表</span><span class="lp-type">確度バッジ</span><span class="lp-type">表</span></div>
+          <h3 class="card-title">3か月で「使える人」を3人つくる。</h3>
+          <p class="body-sm muted">12週間の進め方。「確定していること」と「まだ決めていないこと」をバッジで分けた年表が主役です。</p>
+        </a>
+
+        <div class="panel stack-sm">
+          <h3 class="card-title">確かさを、色ではなく形で分ける</h3>
+          <p class="body-sm muted">裏が取れたこと・自己申告・未確認を、丸の形で見分けられます。曖昧なまま断定した資料がいちばん事故るので、最初から分けて書けるようにしてあります。</p>
+          <div class="row">
+            <span class="badge badge-success">確定</span>
+            <span class="badge badge-own">自己申告</span>
+            <span class="badge badge-check">未確認</span>
+          </div>
+        </div>
+
+  <section class="section">
+    <div class="stack-lg" style="max-width:760px">
+      <h2 class="headline">Claude Code を使っている人へ</h2>
+      <p class="body muted">スキルとして入れておけば、毎回プロンプトを貼らなくてよくなります。<code class="mono">shiryo/</code> フォルダを <code class="mono">.claude/skills/</code> にコピーして、「資料にして」と打つだけです。</p>
+      <div class="row">
+        <a class="btn btn-secondary" href="https://github.com/sankaku-tech/shiryo-kit">GitHubで見る</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="stack-lg" style="max-width:760px">
+      <h2 class="headline">1枚の図解でいいときは、こちら</h2>
+      <p class="body muted">同じ見た目の姉妹キットがあります。<strong>章が2つ以上要るなら資料キット、ぱっと見て分かる1枚でいいなら図解キット</strong>。迷ったら図解キットのほうが速いです。</p>
+      <div class="row">
+        <a class="btn btn-secondary" href="https://sankaku-tech.github.io/zukai-kit/">図解キットを見る</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="container lp-foot">
+  <div class="stack-sm" style="max-width:760px">
+    <p class="body-sm muted">AIが作った資料は、元の内容が正しいことを保証しません。中身は必ず自分で確かめてください。とくに出典のURLは、実在するか開いて確かめてください。</p>
+    <p class="caption">MIT License · 自由に使って、自由に配ってもらって大丈夫です</p>
+  </div>
+</footer>
+
+<script>
+/* コピー。navigator.clipboard は https か localhost でしか動かないので、
+   落ちたときは選択+execCommand に降りる（古いブラウザ・file:// 対策）。 */
+(function () {
+  var btn = document.getElementById('copyBtn');
+  var note = document.getElementById('copyNote');
+  var box = document.getElementById('promptBox');
+  var peek = document.getElementById('peekBtn');
+
+  function fallback(text) {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly', '');
+    ta.style.position = 'fixed'; ta.style.top = '-1000px';
+    document.body.appendChild(ta);
+    ta.select();
+    var ok = false;
+    try { ok = document.execCommand('copy'); } catch (e) {}
+    document.body.removeChild(ta);
+    return ok;
+  }
+
+  function done(ok) {
+    if (ok) {
+      btn.textContent = 'コピーしました';
+      btn.classList.add('is-done');
+      note.textContent = 'AIのチャットに貼り付けて送ってください';
+      setTimeout(function () {
+        btn.textContent = btn.getAttribute('data-label');
+        btn.classList.remove('is-done');
+        note.textContent = '押すと、下の文章がまるごとコピーされます';
+      }, 4000);
+    } else {
+      // コピーできない環境では、せめて選択できる状態にして見せる
+      box.hidden = false;
+      peek.setAttribute('aria-expanded', 'true');
+      peek.textContent = '中身を隠す ▴';
+      note.textContent = 'コピーできませんでした。下の文章を選択してコピーしてください';
+    }
+  }
+
+  btn.addEventListener('click', function () {
+    var text = box.textContent;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () { done(true); },
+                                              function () { done(fallback(text)); });
+    } else {
+      done(fallback(text));
+    }
+  });
+
+  peek.addEventListener('click', function () {
+    var open = box.hidden;
+    box.hidden = !open;
+    peek.setAttribute('aria-expanded', String(open));
+    peek.textContent = open ? '中身を隠す ▴' : '中身を見る ▾';
+  });
+})();
+</script>
+
+</body>
+</html>
